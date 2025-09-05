@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM - Search Augmented Model | AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --ai-cyan: #06D6A0;
+            --bg-light: #F8FAFC;
+            --text-dark: #1F2937;
+            --accent-orange: #F59E0B;
+            --white: #FFFFFF;
+            --border-light: #E5E7EB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e40af 100%);
+            color: var(--white);
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="circuit" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/><path d="M5,5 L15,5 M5,5 L5,15" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23circuit)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(45deg, var(--ai-cyan), #00b894);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .title-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--white), var(--ai-cyan));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-section p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: -2rem auto 0;
+            padding: 0 2rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: var(--ai-cyan);
+            background: rgba(6, 214, 160, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--ai-cyan);
+            background: rgba(6, 214, 160, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .upload-area:hover .upload-icon {
+            color: var(--ai-cyan);
+            transform: translateY(-4px);
+        }
+
+        .upload-text {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .upload-text strong {
+            color: var(--text-dark);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            background: linear-gradient(90deg, var(--gray-100), var(--white));
+        }
+
+        .chat-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-indicator {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--ai-cyan);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: linear-gradient(180deg, var(--white) 0%, var(--gray-100) 100%);
+        }
+
+        .message {
+            margin-bottom: 2rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message-bot {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-xl);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-user .message-content {
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: var(--white);
+            border-bottom-right-radius: var(--radius);
+        }
+
+        .message-bot .message-content {
+            background: var(--white);
+            color: var(--text-dark);
+            border: 1px solid var(--border-light);
+            border-bottom-left-radius: var(--radius);
+        }
+
+        .message-meta {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-light);
+            background: var(--white);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            min-height: 3rem;
+            max-height: 8rem;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: none;
+            transition: var(--transition);
+            background: var(--gray-100);
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 6rem;
+            justify-content: center;
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 1rem;
+        }
+
+        .typing-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--gray-400);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-lg);
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-message.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #166534;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-message.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                position: static;
+                order: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem 1rem;
+            }
+            
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .title-section h1 {
+                font-size: 2rem;
+            }
+            
+            .chat-container {
+                height: 70vh;
+            }
+            
+            .messages-container {
+                padding: 1rem;
+            }
+            
+            .input-area {
+                padding: 1rem;
+            }
+        }
+
+        /* Smooth scrollbar */
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            border-top-color: var(--primary-blue);
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="title-section">
+                <h1>SAM</h1>
+                <p>Search Augmented Model - Your Intelligent AI Assistant</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="app-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        Upload Documents
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">
+                            <strong>Drop your documents here</strong><br>
+                            or <strong>click to browse</strong><br>
+                            <small>PDF, DOCX, TXT, HTML supported</small>
+                        </div>
+                        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.docx,.txt,.html,.md,.csv,.json">
+                    </div>
+                    <div id="uploadStatus"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-chart-line"></i>
+                        Quick Stats
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--gray-600);">
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong id="docCount">0</strong> documents uploaded
+                        </div>
+                        <div>
+                            <strong id="messageCount">0</strong> messages exchanged
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>
+                        <div class="status-indicator"></div>
+                        Conversation with SAM
+                    </h2>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <div class="message message-bot">
+                        <div class="message-content">
+                            <strong>👋 Hello!</strong> I'm SAM, your AI-powered assistant. I can help you with questions, analyze documents you upload, and provide intelligent responses based on your knowledge base.
+                            <div class="message-meta">
+                                <i class="fas fa-robot"></i>
+                                Just now
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="messageInput" 
+                                class="message-input" 
+                                placeholder="Ask me anything... (Press Enter to send, Shift+Enter for new line)"
+                                rows="1"
+                            ></textarea>
+                        </div>
+                        <button id="sendButton" class="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class SAMBot {
+            constructor() {
+                this.messagesContainer = document.getElementById('messagesContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.uploadArea = document.getElementById('uploadArea');
+                this.fileInput = document.getElementById('fileInput');
+                this.uploadStatus = document.getElementById('uploadStatus');
+                this.docCount = document.getElementById('docCount');
+                this.messageCount = document.getElementById('messageCount');
+                
+                this.sessionId = this.generateSessionId();
+                this.messageCounter = 0;
+                this.documentCounter = 0;
+                
+                this.initializeEventListeners();
+                this.setupAutoResize();
+            }
+            
+            generateSessionId() {
+                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            initializeEventListeners() {
+                // Send message events
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                
+                // Upload events
+                this.uploadArea.addEventListener('click', () => this.fileInput.click());
+                this.uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    this.uploadArea.classList.add('dragover');
+                });
+                this.uploadArea.addEventListener('dragleave', () => {
+                    this.uploadArea.classList.remove('dragover');
+                });
+                this.uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    this.uploadArea.classList.remove('dragover');
+                    this.handleFileUpload(e.dataTransfer.files[0]);
+                });
+                this.fileInput.addEventListener('change', (e) => {
+                    if (e.target.files[0]) {
+                        this.handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+            
+            setupAutoResize() {
+                this.messageInput.addEventListener('input', () => {
+                    this.messageInput.style.height = 'auto';
+                    this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+                });
+            }
+            
+            addMessage(content, isUser = false, metadata = null) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'message-user' : 'message-bot'}`;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                
+                if (typeof content === 'string') {
+                    contentDiv.innerHTML = this.formatMessage(content);
+                } else {
+                    contentDiv.appendChild(content);
+                }
+                
+                if (metadata) {
+                    const metaDiv = document.createElement('div');
+                    metaDiv.className = 'message-meta';
+                    metaDiv.innerHTML = `<i class="fas ${isUser ? 'fa-user' : 'fa-robot'}"></i> ${metadata}`;
+                    contentDiv.appendChild(metaDiv);
+                }
+                
+                messageDiv.appendChild(contentDiv);
+                this.messagesContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+                
+                this.messageCounter++;
+                this.messageCount.textContent = this.messageCounter;
+            }
+            
+            formatMessage(text) {
+                // Simple markdown-like formatting
+                return text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+            }
+            
+            showTyping() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message message-bot';
+                typingDiv.id = 'typing-indicator';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = `
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                `;
+                
+                typingDiv.appendChild(contentDiv);
+                this.messagesContainer.appendChild(typingDiv);
+                this.scrollToBottom();
+            }
+            
+            hideTyping() {
+                const typing = document.getElementById('typing-indicator');
+                if (typing) typing.remove();
+            }
+            
+            scrollToBottom() {
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+            
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+                
+                // Add user message
+                this.addMessage(message, true, 'Just now');
+                this.messageInput.value = '';
+                this.messageInput.style.height = 'auto';
+                
+                // Disable input
+                this.sendButton.disabled = true;
+                this.sendButton.innerHTML = '<div class="loading"></div> Thinking';
+                this.showTyping();
+                
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            session_id: this.sessionId
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    this.hideTyping();
+                    
+                    if (response.ok) {
+                        let responseText = data.response;
+                        let metadata = 'Just now';
+                        
+                        if (data.sources_used > 0) {
+                            metadata += ` • ${data.sources_used} source${data.sources_used > 1 ? 's' : ''} used`;
+                        }
+                        
+                        this.addMessage(responseText, false, metadata);
+                    } else {
+                        this.addMessage('❌ Sorry, I encountered an error. Please try again.', false, 'Error');
+                    }
+                } catch (error) {
+                    this.hideTyping();
+                    this.addMessage('❌ Connection error. Please check your internet connection.', false, 'Error');
+                } finally {
+                    this.sendButton.disabled = false;
+                    this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                    this.messageInput.focus();
+                }
+            }
+            
+            async handleFileUpload(file) {
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                this.showUploadStatus(`Uploading ${file.name}...`, 'info');
+                
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.showUploadStatus(`✅ Successfully uploaded ${file.name}`, 'success');
+                        this.addMessage(`📄 **Document uploaded:** ${file.name} has been added to my knowledge base and is ready for questions!`, false, 'System');
+                        this.documentCounter++;
+                        this.docCount.textContent = this.documentCounter;
+                    } else {
+                        this.showUploadStatus(`❌ Upload failed: ${data.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.showUploadStatus('❌ Upload failed. Please try again.', 'error');
+                }
+                
+                // Clear file input
+                this.fileInput.value = '';
+            }
+            
+            showUploadStatus(message, type) {
+                this.uploadStatus.innerHTML = `<div class="status-message ${type}">${message}</div>`;
+                
+                if (type === 'success') {
+                    setTimeout(() => {
+                        this.uploadStatus.innerHTML = '';
+                    }, 3000);
+                }
+            }
+        }
+        
+        // Initialize SAM Bot when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new SAMBot();
+        });
+    </script>
+</body>
+</html>

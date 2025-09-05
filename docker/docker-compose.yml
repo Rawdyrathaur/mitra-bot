@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  sam-bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sam-bot-api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - PORT=5000
+    volumes:
+      - sam_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  sam_data:
+    driver: local
