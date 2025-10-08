@@ -1,6 +1,6 @@
-# SAM Bot - Advanced AI Customer Support Assistant
+# Mitra Bot - Advanced AI Customer Support Assistant
 
-🤖 **SAM (Search Augmented Model)** is a comprehensive AI-powered customer support bot that leverages your company's documentation to provide accurate, context-aware answers to customer queries.
+🤖 **Mitra** is a comprehensive AI-powered customer support bot that leverages your company's documentation to provide accurate, context-aware answers to customer queries.
 
 ## 🚀 Key Features
 
@@ -62,7 +62,7 @@
 ### 1. Environment Setup
 ```bash
 # Clone and navigate to the project
-cd sam-bot
+cd mitra-bot
 
 # Copy and configure environment variables
 cp .env.example .env
@@ -103,7 +103,7 @@ open http://localhost:5000/admin
 ### Environment Variables
 ```bash
 # Database
-DATABASE_URL=postgresql://sam_user:password@localhost:5432/sam_db
+DATABASE_URL=postgresql://mitra_user:password@localhost:5432/mitra_db
 REDIS_URL=redis://localhost:6379/0
 
 # OpenAI
@@ -243,7 +243,7 @@ Access the admin dashboard at `http://localhost:5000/admin`
 kubectl apply -f deployment/
 
 # Check deployment status
-kubectl get pods -l app=sam-bot
+kubectl get pods -l app=mitra-bot
 ```
 
 ### AWS ECS Deployment
@@ -252,7 +252,7 @@ kubectl get pods -l app=sam-bot
 aws ecs register-task-definition --cli-input-json file://deployment/task-definition.json
 
 # Update service
-aws ecs update-service --cluster sam-cluster --service sam-bot-service
+aws ecs update-service --cluster mitra-cluster --service mitra-bot-service
 ```
 
 ### Monitoring & Observability
@@ -304,7 +304,7 @@ locust -f tests/load_test.py --host=http://localhost:5000
 
 ### Project Structure
 ```
-sam-bot/
+mitra-bot/
 ├── src/
 │   ├── api/              # API endpoints
 │   ├── services/         # Business logic services
@@ -312,7 +312,7 @@ sam-bot/
 │   └── utils/            # Utility functions
 ├── templates/            # HTML templates
 ├── deployment/           # Kubernetes/ECS configs
-├── monitoring/           # Prometheus/Grafana configs
+├── assets/              # Images and static assets
 ├── tests/               # Test files
 └── docs/                # Documentation
 ```
@@ -347,5 +347,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ for modern customer support teams**
-#   S A M  
- 
