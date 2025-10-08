@@ -1,11 +1,11 @@
+
 <div align="center">
   <img src="assets/logo/mitra-bot-logo.png" alt="Mitra Bot Logo" width="200"/>
-  <div>
 
-# Mitra Bot - Advanced AI Customer Support Assistant
+  # Mitra Bot - Advanced AI Customer Support Assistant
 
-🤖 **Mitra** is a comprehensive AI-powered customer support bot that leverages your company's documentation to provide accurate, context-aware answers to customer queries.
-
+  🤖 **Mitra** is a comprehensive AI-powered customer support bot that leverages your company's documentation to provide accurate, context-aware answers to customer queries.
+</div>
 ## 🚀 Key Features
 
 ### Core Capabilities
