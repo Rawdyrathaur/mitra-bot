@@ -325,25 +325,9 @@ mitra-bot/
 4. **Tests**: Add corresponding test files
 5. **Documentation**: Update API docs and README
 
-## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Run the test suite
-5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/ItsVicky25/mitra-bot/blob/main/LICENSE) file for details.
 
-## 🆘 Support
-
-- **Documentation**: Check the `/docs` folder for detailed guides
-- **Issues**: Report bugs via GitHub Issues
-- **Discussions**: Community discussions in GitHub Discussions
-- **Enterprise Support**: Contact for commercial support options
-
----
-
-**Built with ❤️ for modern customer support teams**
