@@ -1,6 +1,8 @@
 
 <div align="center">
-  <img src="mitra-bot-logo.png" alt="Mitra Bot Logo" width="200"/>
+<video width="200" controls>
+  <source src="./mitra-bot-logo.mp4" type="video/mp4">
+</video>
 
   # Mitra Bot - Advanced AI Customer Support Assistant
 
