@@ -3,7 +3,7 @@ Flask==2.3.3
 Flask-CORS==4.0.0
 Flask-JWT-Extended==4.5.3
 Flask-Limiter==3.5.0
-Flask-Mail==0.9.1
+Flask-Mailman==1.0.0
 gunicorn==21.2.0
 uvicorn==0.24.0
 
@@ -15,15 +15,15 @@ pgvector==0.1.8
 
 # Redis
 redis==5.0.1
-hiredis==2.2.3
+hiredis==2.3.2
 
 # OpenAI and AI
 openai==1.3.5
-tiktoken==0.5.1
+tiktoken==0.6.0
 
 # Document Processing
 langchain==0.0.340
-sentence-transformers==2.2.2
+sentence-transformers==2.5.1
 PyPDF2==3.0.1
 docx2txt==0.8
 python-docx==1.1.2
@@ -34,9 +34,9 @@ pdf2image==1.16.3
 pytesseract==0.3.10
 
 # Data Processing
-numpy==1.24.3
+numpy==1.26.4
 pandas==2.1.3
-scipy==1.11.4
+scipy==1.12.0
 
 # Authentication and Security
 bcrypt==4.1.2
