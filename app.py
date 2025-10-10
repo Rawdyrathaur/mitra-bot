@@ -110,14 +110,20 @@ KNOWLEDGE_BASE = {}
 SESSION_RECENT_DOCS = {}
 
 def load_knowledge_base():
-    """Load knowledge base from database"""
+    """Load knowledge base from database - Serverless compatible"""
+    global KNOWLEDGE_BASE
+
+    # In serverless, check if already loaded to avoid repeated database hits
+    if KNOWLEDGE_BASE:
+        return
+
     db = SessionLocal()
     try:
         chunks = db.query(KnowledgeChunk).all()
         documents = db.query(Document).order_by(Document.upload_date.desc()).all()  # Order by most recent first
-        
+
         doc_map = {doc.id: doc for doc in documents}
-        
+
         for chunk in chunks:
             doc = doc_map.get(chunk.document_id)
             if doc:
@@ -129,7 +135,7 @@ def load_knowledge_base():
                     'chunk_id': chunk.id,
                     'upload_date': doc.upload_date  # Add upload date for recency scoring
                 }
-        
+
         logger.info(f"✅ Loaded {len(KNOWLEDGE_BASE)} knowledge chunks")
     except Exception as e:
         logger.error(f"Failed to load knowledge base: {e}")
@@ -1140,24 +1146,27 @@ def login():
 def chat():
     """Main chat endpoint with AI integration"""
     try:
+        # Load knowledge base (serverless-compatible: loads on first request)
+        load_knowledge_base()
+
         data = request.get_json()
-        
+
         if not data or 'message' not in data:
             return jsonify({'error': 'Message is required'}), 400
-        
+
         message = data['message'].strip()
         session_id = data.get('session_id', str(uuid.uuid4()))
         user_id = None
-        
+
         # Try to get user ID from JWT if present
         try:
             user_id = get_jwt_identity()
         except:
             pass  # Anonymous user
-        
+
         if not message:
             return jsonify({'error': 'Message cannot be empty'}), 400
-        
+
         # Search knowledge base for relevant context
         context_chunks = search_knowledge_base(message, limit=3, session_id=session_id)
         
