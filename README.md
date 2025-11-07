@@ -2,9 +2,10 @@
 <div align="center">
 
 <div align="center">
-  <img src="Animated_Head_Shaking_and_Blinking_Video (online-video-cutter (1).gif" alt="Mitra Bot Logo" width="200"/>
+  <img src="mitra-bot-logo.png" alt="Mitra Bot Logo" width="200"/>
 </div>
-  # Mitra Bot - Advanced AI Customer Support Assistant
+
+# Mitra Bot - Advanced AI Customer Support Assistant
 
   🤖 **Mitra** is a comprehensive AI-powered customer support bot that leverages your company's documentation to provide accurate, context-aware answers to customer queries.
 </div>

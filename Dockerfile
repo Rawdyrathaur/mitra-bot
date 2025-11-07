@@ -67,7 +67,8 @@ COPY --from=builder /root/.local /home/sambot/.local
 # Copy application code with proper ownership
 COPY --chown=sambot:sambot src/ ./src/
 COPY --chown=sambot:sambot templates/ ./templates/
-COPY --chown=sambot:sambot .env* ./
+COPY --chown=sambot:sambot wsgi.py ./
+COPY --chown=sambot:sambot gunicorn_config.py ./
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /app/logs /app/uploads /app/temp \
@@ -88,15 +89,5 @@ USER sambot
 
 EXPOSE 5000
 
-# Use gunicorn for production
-CMD ["gunicorn", \
-     "--bind", "0.0.0.0:5000", \
-     "--workers", "4", \
-     "--worker-class", "sync", \
-     "--timeout", "120", \
-     "--max-requests", "1000", \
-     "--max-requests-jitter", "100", \
-     "--preload", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "src.api.main_api:app"]
+# Use gunicorn for production with config file
+CMD ["gunicorn", "-c", "gunicorn_config.py", "wsgi:app"]

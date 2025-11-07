@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with pgvector
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: mitra-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mitra_db}
+      POSTGRES_USER: ${POSTGRES_USER:-mitra_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deployment/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mitra_user} -d ${POSTGRES_DB:-mitra_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mitra-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: mitra-redis
+    restart: always
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mitra-network
+
+  # Mitra Bot Application
+  mitra-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: mitra-bot-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-mitra_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-mitra_db}
+
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+
+      # OpenAI
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-3.5-turbo}
+      OPENAI_TEMPERATURE: ${OPENAI_TEMPERATURE:-0.7}
+      MAX_RESPONSE_TOKENS: ${MAX_RESPONSE_TOKENS:-500}
+      CONFIDENCE_THRESHOLD: ${CONFIDENCE_THRESHOLD:-0.6}
+
+      # Flask
+      FLASK_ENV: production
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_ACCESS_TOKEN_EXPIRES: ${JWT_ACCESS_TOKEN_EXPIRES:-86400}
+
+      # Security
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH:-12}
+      ENABLE_RATE_LIMITING: ${ENABLE_RATE_LIMITING:-true}
+
+      # File Upload
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-16777216}
+      ALLOWED_EXTENSIONS: ${ALLOWED_EXTENSIONS:-pdf,docx,txt,html}
+
+      # Document Processing
+      CHUNK_SIZE: ${CHUNK_SIZE:-1000}
+      CHUNK_OVERLAP: ${CHUNK_OVERLAP:-200}
+      SIMILARITY_THRESHOLD: ${SIMILARITY_THRESHOLD:-0.15}
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FILE: /app/logs/mitra-bot.log
+      ENABLE_REQUEST_LOGGING: ${ENABLE_REQUEST_LOGGING:-true}
+
+      # Server
+      PORT: 5000
+      HOST: 0.0.0.0
+      WORKERS: ${WORKERS:-4}
+
+      # Features
+      ENABLE_ANALYTICS: ${ENABLE_ANALYTICS:-true}
+      ENABLE_FEEDBACK: ${ENABLE_FEEDBACK:-true}
+      ENABLE_MONITORING: ${ENABLE_MONITORING:-true}
+
+      # Monitoring
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: production
+
+      # Performance
+      CONVERSATION_CONTEXT_WINDOW: ${CONVERSATION_CONTEXT_WINDOW:-10}
+      MAX_SEARCH_RESULTS: ${MAX_SEARCH_RESULTS:-20}
+      CACHE_TTL: ${CACHE_TTL:-3600}
+
+      # Data Retention
+      DATA_RETENTION_DAYS: ${DATA_RETENTION_DAYS:-365}
+      SESSION_RETENTION_DAYS: ${SESSION_RETENTION_DAYS:-30}
+
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./temp:/app/temp
+
+    ports:
+      - "5000:5000"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    networks:
+      - mitra-network
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: mitra-nginx
+    restart: always
+    depends_on:
+      - mitra-bot
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deployment/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./deployment/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - mitra-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  mitra-network:
+    driver: bridge

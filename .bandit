@@ -1,0 +1,3 @@
+[bandit]
+exclude_dirs = ['/venv', '/env', '/.venv', '/tests', '/deployment']
+skips = B101,B601
