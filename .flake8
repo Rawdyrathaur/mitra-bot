@@ -1,0 +1,18 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .eggs,
+    *.egg-info,
+    .venv,
+    venv,
+    frontend,
+    tests,
+    src/api/main_api.py,
+    src/services/,
+    src/models/,
+    src/utils/
+max-line-length = 120
+ignore = E203, W503

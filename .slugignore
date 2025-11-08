@@ -42,6 +42,14 @@ tests/
 test_*.py
 *_test.py
 
+# Unused complex API files (not needed for simple_api deployment)
+src/api/main_api.py
+src/services/document_service.py
+src/services/knowledge_service.py
+src/services/
+src/models/
+src/utils/
+
 # Docker
 Dockerfile
 docker-compose.yml
