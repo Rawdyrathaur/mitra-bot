@@ -12,6 +12,7 @@ from datetime import datetime
 import sqlite3
 from typing import Optional, List, Dict
 from dotenv import load_dotenv
+from auth_manager import AuthManager, require_auth, optional_auth
 
 # Load environment variables
 load_dotenv()
@@ -24,7 +25,22 @@ app = Flask(__name__,
             template_folder='../templates',
             static_folder='../frontend',
             static_url_path='')
-CORS(app)
+
+# CORS configuration for production deployment
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5000",
+            "http://localhost:3000",
+            "https://*.vercel.app",
+            "https://*.netlify.app",
+            "https://*.onrender.com"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 # Simple database manager using SQLite
 class SimpleDatabase:
@@ -603,8 +619,6 @@ def clear_session(session_id):
 # ===== AUTHENTICATION ROUTES =====
 
 # Initialize auth manager
-from auth_manager import AuthManager, require_auth, optional_auth
-
 auth_manager = AuthManager()
 
 @app.route('/api/auth/register', methods=['POST'])

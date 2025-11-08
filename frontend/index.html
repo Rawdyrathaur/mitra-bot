@@ -33,7 +33,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <img src="../mitra-bot-logo.png" alt="Mitra Bot" class="logo">
+                    <img src="/mitra-bot-logo.png" alt="Mitra Bot" class="logo">
                     <span class="brand-name">Mitra Bot</span>
                 </div>
                 <div class="header-actions">
@@ -150,9 +150,6 @@
                     <button class="icon-btn" id="shareBtn" title="Share">
                         <i class="fas fa-share-alt"></i>
                     </button>
-                    <button class="icon-btn" id="moreBtn" title="More options">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
                 </div>
             </header>
 
@@ -232,24 +229,6 @@
                 <!-- Character Counter -->
                 <div class="character-counter" id="charCounter" style="display: none;">
                     <span id="charCount">0</span> / <span>3000</span>
-                </div>
-
-                <!-- Advanced Options Toggle -->
-                <button class="advanced-toggle" id="advancedToggle">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>More options</span>
-                </button>
-
-                <!-- Advanced Options Panel -->
-                <div class="advanced-options" id="advancedOptions" style="display: none;">
-                    <div class="option-group">
-                        <label>Temperature: <span id="tempValue">0.7</span></label>
-                        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
-                    </div>
-                    <div class="option-group">
-                        <label>Max Tokens: <span id="tokensValue">500</span></label>
-                        <input type="range" id="maxTokens" min="50" max="2000" step="50" value="500">
-                    </div>
                 </div>
             </div>
         </main>

@@ -1,0 +1,27 @@
+services:
+  # Backend API Service
+  - type: web
+    name: mitra-bot-backend
+    runtime: python
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: AI_TEMPERATURE
+        value: 0.7
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///mitra_bot.db
+      - key: FLASK_ENV
+        value: production
+    autoDeploy: true

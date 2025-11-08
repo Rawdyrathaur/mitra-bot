@@ -115,11 +115,6 @@ class UI {
             this.addCollection();
         });
 
-        // More options button
-        document.getElementById('moreBtn')?.addEventListener('click', () => {
-            this.showMoreOptions();
-        });
-
         // Panel tabs
         document.querySelectorAll('.panel-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
@@ -477,41 +472,6 @@ class UI {
                 <span class="collection-count">(${coll.conversations.length})</span>
             </div>
         `).join('');
-    }
-
-    // More Options Menu
-    showMoreOptions() {
-        const options = `
-            <div class="more-options-menu" style="position: absolute; right: 60px; top: 70px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000;">
-                <button onclick="window.ui.exportConversation()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-download"></i> Export Chat
-                </button>
-                <button onclick="window.ui.clearConversation()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-eraser"></i> Clear Messages
-                </button>
-                <button onclick="window.ui.toggleRightPanel()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-info-circle"></i> Show Details
-                </button>
-            </div>
-        `;
-
-        // Remove existing menu if any
-        document.querySelector('.more-options-menu')?.remove();
-
-        // Add new menu
-        const div = document.createElement('div');
-        div.innerHTML = options;
-        document.body.appendChild(div.firstElementChild);
-
-        // Close on outside click
-        setTimeout(() => {
-            document.addEventListener('click', function closeMenu(e) {
-                if (!e.target.closest('.more-options-menu') && !e.target.closest('#moreBtn')) {
-                    document.querySelector('.more-options-menu')?.remove();
-                    document.removeEventListener('click', closeMenu);
-                }
-            });
-        }, 0);
     }
 
     exportConversation() {
