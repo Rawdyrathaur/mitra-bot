@@ -1,0 +1,143 @@
+/* ============================================
+   THEME SYSTEM - DARK & LIGHT
+   ============================================ */
+
+/* DARK THEME (Default) */
+[data-theme="dark"] {
+    /* Backgrounds */
+    --bg-primary: #0D0D0D;
+    --bg-secondary: #1A1A1A;
+    --bg-tertiary: #2D2D2D;
+
+    /* Text Colors */
+    --text-primary: #ECECEC;
+    --text-secondary: #B4B4B4;
+    --text-tertiary: #666666;
+
+    /* Accent Colors */
+    --accent-primary: #00D084;
+    --accent-secondary: #1E90FF;
+    --accent-primary-alpha: rgba(0, 208, 132, 0.1);
+
+    /* Borders */
+    --border: #404040;
+
+    /* Semantic Colors */
+    --success: #2ED573;
+    --error: #FF4757;
+    --warning: #FFA502;
+    --info: #1E90FF;
+
+    /* Message Bubbles */
+    --user-message-bg: #00D084;
+    --user-message-text: #1A1A1A;
+    --ai-message-bg: #1A1A1A;
+    --ai-message-text: #ECECEC;
+    --ai-message-border: #404040;
+
+    /* Code Blocks */
+    --code-bg: #0D0D0D;
+    --code-border: #404040;
+
+    /* Overlays */
+    --overlay-bg: rgba(13, 13, 13, 0.8);
+    --modal-bg: #1A1A1A;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+    /* Backgrounds */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F5F5F5;
+    --bg-tertiary: #EEEEEE;
+
+    /* Text Colors */
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+
+    /* Accent Colors */
+    --accent-primary: #00D084;
+    --accent-secondary: #1E90FF;
+    --accent-primary-alpha: rgba(0, 208, 132, 0.1);
+
+    /* Borders */
+    --border: #D0D0D0;
+
+    /* Semantic Colors */
+    --success: #2ED573;
+    --error: #FF4757;
+    --warning: #FFA502;
+    --info: #1E90FF;
+
+    /* Message Bubbles */
+    --user-message-bg: #00D084;
+    --user-message-text: #FFFFFF;
+    --ai-message-bg: #F5F5F5;
+    --ai-message-text: #1A1A1A;
+    --ai-message-border: #D0D0D0;
+
+    /* Code Blocks */
+    --code-bg: #F8F8F8;
+    --code-border: #D0D0D0;
+
+    /* Overlays */
+    --overlay-bg: rgba(255, 255, 255, 0.8);
+    --modal-bg: #FFFFFF;
+}
+
+/* THEME TRANSITION */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Disable transitions for specific elements */
+button,
+input,
+textarea,
+select {
+    transition: background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
+}
+
+/* Theme Toggle Icon */
+[data-theme="dark"] #themeToggle .fa-moon {
+    display: block;
+}
+
+[data-theme="dark"] #themeToggle .fa-sun {
+    display: none;
+}
+
+[data-theme="light"] #themeToggle .fa-moon {
+    display: none;
+}
+
+[data-theme="light"] #themeToggle .fa-sun {
+    display: block;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --border: currentColor;
+    }
+
+    .icon-btn:hover {
+        outline: 2px solid currentColor;
+    }
+
+    .conversation-item.active {
+        outline: 2px solid var(--accent-primary);
+    }
+}

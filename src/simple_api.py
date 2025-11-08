@@ -11,12 +11,19 @@ import uuid
 from datetime import datetime
 import sqlite3
 from typing import Optional, List, Dict
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__,
+            template_folder='../templates',
+            static_folder='../frontend',
+            static_url_path='')
 CORS(app)
 
 # Simple database manager using SQLite
@@ -30,7 +37,7 @@ class SimpleDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
+
                 # Create messages table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS messages (
@@ -42,7 +49,18 @@ class SimpleDatabase:
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
                 ''')
-                
+
+                # Migrate old messages table if needed
+                try:
+                    cursor.execute("PRAGMA table_info(messages)")
+                    columns = [col[1] for col in cursor.fetchall()]
+                    if 'session_id' not in columns:
+                        # Add session_id column to existing table
+                        cursor.execute("ALTER TABLE messages ADD COLUMN session_id TEXT")
+                        logger.info("Migrated messages table to add session_id column")
+                except Exception as migrate_error:
+                    logger.debug(f"Migration check: {migrate_error}")
+
                 # Create documents table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS documents (
@@ -52,10 +70,10 @@ class SimpleDatabase:
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
                 ''')
-                
+
                 conn.commit()
                 logger.info("Database initialized successfully")
-                
+
         except Exception as e:
             logger.error(f"Error initializing database: {e}")
             raise
@@ -205,15 +223,51 @@ class SimpleDatabase:
             logger.error(f"Error getting documents: {e}")
             return []
 
-# Simple chat model
+# Simple chat model with AI integration (Groq/OpenAI)
 class SimpleChatModel:
     def __init__(self):
-        """Initialize the simple chat model"""
+        """Initialize the chat model with AI API"""
+        self.use_ai = False
+        self.client = None
+        self.api_type = None
+
+        # Try Groq first (free and fast)
+        groq_key = os.getenv('GROQ_API_KEY')
+        if groq_key and groq_key != 'your-groq-api-key-here':
+            try:
+                from groq import Groq
+                self.client = Groq(api_key=groq_key)
+                self.use_ai = True
+                self.api_type = 'groq'
+                self.model = os.getenv('GROQ_MODEL', 'llama-3.1-70b-versatile')
+                self.temperature = float(os.getenv('AI_TEMPERATURE', '0.7'))
+                logger.info(f"Chat model initialized with Groq ({self.model})")
+            except Exception as e:
+                logger.warning(f"Failed to initialize Groq: {e}")
+                self.use_ai = False
+
+        # Try OpenAI if Groq not available
+        if not self.use_ai:
+            api_key = os.getenv('OPENAI_API_KEY')
+            if api_key and api_key != 'sk-your-openai-api-key-here':
+                try:
+                    from openai import OpenAI
+                    self.client = OpenAI(api_key=api_key)
+                    self.use_ai = True
+                    self.api_type = 'openai'
+                    self.model = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
+                    self.temperature = float(os.getenv('AI_TEMPERATURE', '0.7'))
+                    logger.info(f"Chat model initialized with OpenAI ({self.model})")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize OpenAI: {e}")
+                    self.use_ai = False
+
+        # Fallback responses if no AI API is available
         self.responses = {
             "greeting": [
                 "Hello! How can I help you today?",
                 "Hi there! What can I do for you?",
-                "Hello! I'm SAM, your assistant. How may I assist you?"
+                "Hello! I'm Mitra Bot, your assistant. How may I assist you?"
             ],
             "farewell": [
                 "Goodbye! Have a great day!",
@@ -228,12 +282,14 @@ class SimpleChatModel:
                 "That's a good question. Let me think about that."
             ],
             "help": [
-                "I'm SAM, your AI assistant. I can chat with you and help answer questions!",
+                "I'm Mitra Bot, your AI assistant. I can chat with you and help answer questions!",
                 "I'm here to help! You can ask me questions or just have a conversation.",
-                "I'm SAM Bot! I can assist you with various topics and have conversations."
+                "I'm Mitra Bot! I can assist you with various topics and have conversations."
             ]
         }
-        logger.info("Simple chat model initialized")
+
+        if not self.use_ai:
+            logger.info("Chat model initialized (fallback mode - set GROQ_API_KEY or OPENAI_API_KEY for AI responses)")
     
     def classify_intent(self, message: str) -> str:
         """Classify the intent of a message"""
@@ -255,13 +311,18 @@ class SimpleChatModel:
     def generate_response(self, message: str, context: Optional[List] = None) -> str:
         """Generate a response to the user message"""
         try:
+            # Use AI API if available
+            if self.use_ai and self.client:
+                return self._generate_ai_response(message, context)
+
+            # Fallback to simple pattern matching
             intent = self.classify_intent(message)
-            
+
             # If we have relevant context from documents, use it
             if context and len(context) > 0:
                 context_info = context[0]['content'][:200]  # First 200 chars of most relevant document
                 return f"Based on the available information: {context_info}... Would you like me to elaborate on this topic?"
-            
+
             # Fallback to intent-based responses
             if intent in self.responses:
                 import random
@@ -269,13 +330,43 @@ class SimpleChatModel:
             else:
                 import random
                 response = random.choice(self.responses["default"])
-            
+
             logger.info(f"Generated response for intent: {intent}")
             return response
-            
+
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             return "I'm sorry, I'm having trouble processing that right now."
+
+    def _generate_ai_response(self, message: str, context: Optional[List] = None) -> str:
+        """Generate response using AI API (Groq or OpenAI)"""
+        try:
+            # Build system prompt
+            system_prompt = "You are Mitra Bot, a helpful AI customer support assistant. You are friendly, professional, and concise in your responses."
+
+            # Add context from knowledge base if available
+            if context and len(context) > 0:
+                context_text = "\n\n".join([f"- {doc['content'][:300]}" for doc in context[:2]])
+                system_prompt += f"\n\nRelevant information from knowledge base:\n{context_text}"
+
+            # Call AI API (works for both Groq and OpenAI - same interface)
+            response = self.client.chat.completions.create(
+                model=self.model,
+                temperature=self.temperature,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": message}
+                ]
+            )
+
+            answer = response.choices[0].message.content
+            logger.info(f"Generated AI response using {self.api_type} (model: {self.model})")
+            return answer
+
+        except Exception as e:
+            logger.error(f"{self.api_type} API error: {e}")
+            # Fallback to simple response
+            return "I'm having trouble connecting to my AI service right now. Please try again in a moment."
 
 # Initialize components
 db = SimpleDatabase()
@@ -285,14 +376,15 @@ chat_model = SimpleChatModel()
 def index():
     """Serve the web interface"""
     try:
-        return render_template('index.html')
+        return app.send_static_file('index.html')
     except Exception as e:
+        logger.error(f"Error serving frontend: {e}")
         return f"""
         <html>
         <head><title>SAM Bot</title></head>
         <body>
             <h1>SAM Bot is Running!</h1>
-            <p>The web interface template is not available, but the API is working.</p>
+            <p>The web interface is not available, but the API is working.</p>
             <h2>Available Endpoints:</h2>
             <ul>
                 <li>GET /api/health - Health check</li>
@@ -364,6 +456,8 @@ def chat():
         return jsonify({"error": "Internal server error"}), 500
 
 @app.route('/api/upload', methods=['POST'])
+@app.route('/api/documents/upload', methods=['POST'])
+@optional_auth
 def upload_document():
     """Enhanced document upload endpoint supporting both files and JSON"""
     try:
@@ -505,6 +599,130 @@ def clear_session(session_id):
     except Exception as e:
         logger.error(f"Error clearing session: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+# ===== AUTHENTICATION ROUTES =====
+
+# Initialize auth manager
+from auth_manager import AuthManager, require_auth, optional_auth
+
+auth_manager = AuthManager()
+
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    """Register a new user"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        username = data.get('username')
+        password = data.get('password')
+
+        result = auth_manager.register_user(email, username, password)
+
+        if result['success']:
+            return jsonify(result), 201
+        else:
+            return jsonify(result), 400
+
+    except Exception as e:
+        logger.error(f"Error in register endpoint: {e}")
+        return jsonify({'success': False, 'error': 'Registration failed'}), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """Login user and return JWT token"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+
+        result = auth_manager.login_user(email, password)
+
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 401
+
+    except Exception as e:
+        logger.error(f"Error in login endpoint: {e}")
+        return jsonify({'success': False, 'error': 'Login failed'}), 500
+
+@app.route('/api/auth/profile', methods=['GET'])
+@require_auth
+def get_profile():
+    """Get current user profile"""
+    try:
+        user = auth_manager.get_user_by_id(request.user_id)
+
+        if user:
+            return jsonify({'success': True, 'user': user}), 200
+        else:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+
+    except Exception as e:
+        logger.error(f"Error getting profile: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get profile'}), 500
+
+@app.route('/api/auth/profile', methods=['PUT'])
+@require_auth
+def update_profile():
+    """Update user profile"""
+    try:
+        data = request.get_json()
+        success = auth_manager.update_user_profile(request.user_id, data)
+
+        if success:
+            return jsonify({'success': True}), 200
+        else:
+            return jsonify({'success': False, 'error': 'Failed to update profile'}), 400
+
+    except Exception as e:
+        logger.error(f"Error updating profile: {e}")
+        return jsonify({'success': False, 'error': 'Failed to update profile'}), 500
+
+@app.route('/api/auth/change-password', methods=['POST'])
+@require_auth
+def change_password():
+    """Change user password"""
+    try:
+        data = request.get_json()
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+
+        result = auth_manager.change_password(request.user_id, current_password, new_password)
+
+        if result['success']:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+
+    except Exception as e:
+        logger.error(f"Error changing password: {e}")
+        return jsonify({'success': False, 'error': 'Failed to change password'}), 500
+
+@app.route('/auth.html')
+def serve_auth_page():
+    """Serve authentication page"""
+    from flask import send_from_directory
+    return send_from_directory('../frontend', 'auth.html')
+
+# Static file routes for frontend
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    """Serve CSS files"""
+    from flask import send_from_directory
+    return send_from_directory('../frontend/css', filename)
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    """Serve JavaScript files"""
+    from flask import send_from_directory
+    return send_from_directory('../frontend/js', filename)
+
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    """Serve asset files"""
+    from flask import send_from_directory
+    return send_from_directory('../frontend/assets', filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mitra Bot - Advanced AI Customer Support Assistant">
+    <title>Mitra Bot - AI Assistant</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Connection Status Indicator -->
+    <div class="connection-status" id="connectionStatus" title="Connected">
+        <span class="status-dot"></span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="../mitra-bot-logo.png" alt="Mitra Bot" class="logo">
+                    <span class="brand-name">Mitra Bot</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="icon-btn" id="settingsBtn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Chat Button -->
+            <button class="new-chat-btn" id="newChatBtn">
+                <i class="fas fa-plus"></i>
+                <span>New Chat</span>
+            </button>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search conversations..." id="searchInput">
+                <button class="clear-btn" id="clearSearch" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="today">Today</button>
+                <button class="filter-btn" data-filter="week">This Week</button>
+                <button class="filter-btn" data-filter="starred">Starred</button>
+            </div>
+
+            <!-- Conversations List -->
+            <div class="conversations-container">
+                <!-- Pinned Section -->
+                <div class="conversation-section" id="pinnedSection">
+                    <div class="section-header">
+                        <i class="fas fa-thumbtack"></i>
+                        <span>Pinned</span>
+                    </div>
+                    <div class="conversation-list" id="pinnedList">
+                        <!-- Pinned conversations will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Recent Section -->
+                <div class="conversation-section">
+                    <div class="section-header">
+                        <i class="fas fa-clock"></i>
+                        <span>Recent</span>
+                    </div>
+                    <div class="conversation-list" id="recentList">
+                        <!-- Recent conversations will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Collections -->
+                <div class="conversation-section" id="collectionsSection">
+                    <div class="section-header">
+                        <i class="fas fa-folder"></i>
+                        <span>Collections</span>
+                        <button class="icon-btn-sm" id="addCollectionBtn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="collections-list" id="collectionsList">
+                        <!-- Collections will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">User</div>
+                        <div class="user-status">Online</div>
+                    </div>
+                </div>
+                <div class="utility-actions">
+                    <button class="icon-btn" title="Help">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button class="icon-btn" title="Feedback">
+                        <i class="fas fa-comment-dots"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CHAT AREA -->
+        <main class="chat-container">
+            <!-- Chat Header -->
+            <header class="chat-header" id="chatHeader">
+                <div class="chat-title-section">
+                    <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="chat-title" id="chatTitle">Welcome to Mitra Bot</h1>
+                        <p class="chat-subtitle" id="chatSubtitle">AI-powered customer support</p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="icon-btn" id="starBtn" title="Star conversation">
+                        <i class="far fa-star"></i>
+                    </button>
+                    <button class="icon-btn" id="shareBtn" title="Share">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="icon-btn" id="moreBtn" title="More options">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2>Start a new conversation</h2>
+                    <p>Ask me anything or try one of these:</p>
+                    <div class="prompt-templates">
+                        <button class="prompt-card" data-prompt="Help me understand my product documentation">
+                            <i class="fas fa-book"></i>
+                            <span>Understand docs</span>
+                        </button>
+                        <button class="prompt-card" data-prompt="Search through my knowledge base">
+                            <i class="fas fa-search"></i>
+                            <span>Search knowledge</span>
+                        </button>
+                        <button class="prompt-card" data-prompt="Help me troubleshoot an issue">
+                            <i class="fas fa-tools"></i>
+                            <span>Troubleshoot</span>
+                        </button>
+                        <button class="prompt-card" data-prompt="Answer customer questions">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Customer Q&A</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages will be inserted here -->
+            </div>
+
+            <!-- Scroll to Bottom Button -->
+            <button class="scroll-bottom-btn" id="scrollBottomBtn" style="display: none;">
+                <i class="fas fa-arrow-down"></i>
+            </button>
+
+            <!-- Chat Input Area (Composer) -->
+            <div class="chat-composer">
+                <!-- Attachment Preview -->
+                <div class="attachment-preview" id="attachmentPreview" style="display: none;">
+                    <!-- Attachment thumbnails will be inserted here -->
+                </div>
+
+                <!-- Quick Suggestions -->
+                <div class="quick-suggestions" id="quickSuggestions" style="display: none;">
+                    <!-- Suggested prompts will be inserted here -->
+                </div>
+
+                <!-- Input Container -->
+                <div class="input-container">
+                    <button class="input-action-btn" id="attachBtn" title="Attach file">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="input-action-btn" id="voiceBtn" title="Voice input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+
+                    <textarea
+                        class="chat-input"
+                        id="chatInput"
+                        placeholder="Message your AI assistant..."
+                        rows="1"
+                    ></textarea>
+
+                    <button class="input-action-btn" id="suggestBtn" title="Get suggestions">
+                        <i class="fas fa-lightbulb"></i>
+                    </button>
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <!-- Character Counter -->
+                <div class="character-counter" id="charCounter" style="display: none;">
+                    <span id="charCount">0</span> / <span>3000</span>
+                </div>
+
+                <!-- Advanced Options Toggle -->
+                <button class="advanced-toggle" id="advancedToggle">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>More options</span>
+                </button>
+
+                <!-- Advanced Options Panel -->
+                <div class="advanced-options" id="advancedOptions" style="display: none;">
+                    <div class="option-group">
+                        <label>Temperature: <span id="tempValue">0.7</span></label>
+                        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
+                    </div>
+                    <div class="option-group">
+                        <label>Max Tokens: <span id="tokensValue">500</span></label>
+                        <input type="range" id="maxTokens" min="50" max="2000" step="50" value="500">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL (Optional - Details/Tools) -->
+        <aside class="right-panel" id="rightPanel" style="display: none;">
+            <div class="panel-header">
+                <div class="panel-tabs">
+                    <button class="panel-tab active" data-tab="details">Details</button>
+                    <button class="panel-tab" data-tab="tools">Tools</button>
+                    <button class="panel-tab" data-tab="references">References</button>
+                </div>
+                <button class="icon-btn" id="closePanelBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="panel-content">
+                <div class="panel-tab-content active" id="detailsTab">
+                    <!-- Details content -->
+                </div>
+                <div class="panel-tab-content" id="toolsTab">
+                    <!-- Tools content -->
+                </div>
+                <div class="panel-tab-content" id="referencesTab">
+                    <!-- References content -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modals -->
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal" data-modal="settingsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Settings content will be added via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Share Conversation</h2>
+                <button class="close-modal" data-modal="shareModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Share options will be added via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
