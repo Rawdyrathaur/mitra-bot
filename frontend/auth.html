@@ -686,33 +686,81 @@
         }
 
         // Google Sign-In Configuration
-        // Configure your Client ID in js/oauth-config.js
-        // See oauth-config.js for setup instructions
         const GOOGLE_CLIENT_ID = window.OAUTH_CONFIG ? window.OAUTH_CONFIG.GOOGLE_CLIENT_ID : '';
 
-        // Initialize Google Sign-In
-        function initGoogleSignIn() {
+        // Google Sign-In with Popup (More compatible than One Tap)
+        function signInWithGoogle() {
             if (!GOOGLE_CLIENT_ID) {
-                console.warn('Google Client ID not configured');
+                showToast('Google Sign-In is not configured. Contact administrator.', 'error');
                 return;
             }
 
-            if (typeof google !== 'undefined') {
-                google.accounts.id.initialize({
-                    client_id: GOOGLE_CLIENT_ID,
-                    callback: handleGoogleSignIn,
-                    auto_select: false,
-                    cancel_on_tap_outside: true
-                });
+            // Use OAuth 2.0 popup flow - more reliable than One Tap
+            const redirectUri = window.location.origin + window.location.pathname;
+            const scope = 'email profile';
+            const responseType = 'token id_token';
+            const nonce = Math.random().toString(36).substring(2, 15);
+
+            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}` +
+                `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+                `&response_type=${encodeURIComponent(responseType)}` +
+                `&scope=${encodeURIComponent(scope)}` +
+                `&nonce=${encodeURIComponent(nonce)}`;
+
+            // Open popup window
+            const width = 500;
+            const height = 600;
+            const left = (window.screen.width - width) / 2;
+            const top = (window.screen.height - height) / 2;
+
+            const popup = window.open(
+                authUrl,
+                'Google Sign-In',
+                `width=${width},height=${height},top=${top},left=${left}`
+            );
+
+            if (!popup) {
+                showToast('Please allow popups for Google Sign-In', 'error');
+                return;
+            }
+
+            // Listen for OAuth callback
+            window.addEventListener('message', handleGoogleCallback);
+
+            // Poll for popup close
+            const popupTimer = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(popupTimer);
+                    window.removeEventListener('message', handleGoogleCallback);
+                }
+            }, 500);
+        }
+
+        // Handle OAuth callback
+        async function handleGoogleCallback(event) {
+            // Only accept messages from Google
+            if (!event.origin.includes('accounts.google.com')) {
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams(event.data);
+                const idToken = params.get('id_token');
+
+                if (idToken) {
+                    await processGoogleToken(idToken);
+                }
+            } catch (error) {
+                console.error('Google callback error:', error);
             }
         }
 
-        // Handle Google Sign-In Response
-        async function handleGoogleSignIn(response) {
+        // Process Google ID Token
+        async function processGoogleToken(idToken) {
             try {
-                // Decode the JWT credential to get user info
-                const credential = response.credential;
-                const payload = JSON.parse(atob(credential.split('.')[1]));
+                // Decode JWT to get user info
+                const payload = JSON.parse(atob(idToken.split('.')[1]));
 
                 const email = payload.email;
                 const name = payload.name;
@@ -720,61 +768,54 @@
 
                 showToast('Signing in with Google...', 'success');
 
-                // Create a unique password using Google ID
+                // Create unique password from Google ID
                 const password = 'google_' + googleId;
 
-                // Try to register first (for new users)
+                // Try to register (new user) or login (existing user)
                 try {
                     const registerResponse = await window.api.register(email, name, password);
-
                     if (registerResponse.access_token) {
                         showToast('Account created! Redirecting...', 'success');
                         setTimeout(() => window.location.href = '/', 1000);
                         return;
                     }
                 } catch (registerError) {
-                    // If registration fails, try login (existing user)
+                    // User exists, try login
                     if (registerError.message && registerError.message.includes('already registered')) {
-                        try {
-                            const loginResponse = await window.api.login(email, password);
-
-                            if (loginResponse.access_token) {
-                                showToast('Welcome back! Redirecting...', 'success');
-                                setTimeout(() => window.location.href = '/', 1000);
-                                return;
-                            }
-                        } catch (loginError) {
-                            throw new Error('Unable to sign in. Please use email/password login.');
+                        const loginResponse = await window.api.login(email, password);
+                        if (loginResponse.access_token) {
+                            showToast('Welcome back! Redirecting...', 'success');
+                            setTimeout(() => window.location.href = '/', 1000);
+                            return;
                         }
                     }
                 }
 
-                throw new Error('Google Sign-In failed. Please try again.');
-
+                throw new Error('Google Sign-In failed');
             } catch (error) {
-                console.error('Google Sign-In error:', error);
+                console.error('Google token error:', error);
                 showToast(error.message || 'Google Sign-In failed', 'error');
             }
         }
 
-        // Trigger Google Sign-In
-        function signInWithGoogle() {
-            if (!GOOGLE_CLIENT_ID) {
-                showToast('Google Sign-In is not configured. Contact administrator.', 'error');
-                return;
-            }
+        // Check URL hash for OAuth redirect
+        if (window.location.hash) {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const idToken = hashParams.get('id_token');
 
-            if (typeof google !== 'undefined') {
-                google.accounts.id.prompt(); // Show One Tap prompt
-            } else {
-                showToast('Google Sign-In library not loaded. Please refresh the page.', 'error');
+            if (idToken) {
+                // Notify parent window (if popup)
+                if (window.opener) {
+                    window.opener.postMessage(window.location.hash.substring(1), window.location.origin);
+                    window.close();
+                } else {
+                    // Direct redirect - process token
+                    processGoogleToken(idToken);
+                    // Clean URL
+                    history.replaceState(null, '', window.location.pathname);
+                }
             }
         }
-
-        // Initialize when page loads
-        window.addEventListener('load', () => {
-            initGoogleSignIn();
-        });
 
         // Check if already logged in
         if (window.api && window.api.getToken()) {
