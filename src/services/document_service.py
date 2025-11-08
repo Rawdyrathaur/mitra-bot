@@ -221,9 +221,10 @@ class DocumentProcessor:
                             logger.info(f"No text found on page {page_num + 1}, attempting OCR")
                             # OCR implementation would go here
                             # For now, add a placeholder
-                            text_content.append(f"[Page {page_num + 1}]\\n[Image/Scanned content detected]")\
-                    
-                    except Exception as e:\n                        logger.warning(f"Error processing page {page_num + 1}: {e}")
+                            text_content.append(f"[Page {page_num + 1}]\n[Image/Scanned content detected]")
+
+                    except Exception as e:
+                        logger.warning(f"Error processing page {page_num + 1}: {e}")
             
             content = "\\n\\n".join(text_content)
             

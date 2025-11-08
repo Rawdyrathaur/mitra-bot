@@ -423,7 +423,7 @@ def upload_document():
             title=title,
             uploaded_by=user_id,
             category=category
-        )))
+        ))
         
         if result['success']:
             return jsonify({
