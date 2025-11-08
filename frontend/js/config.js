@@ -3,7 +3,7 @@ const CONFIG = {
     // API Base URL - auto-detect based on environment
     API_BASE_URL: window.location.hostname === 'localhost'
         ? 'http://localhost:5000'
-        : 'https://mitra-bot-backend.onrender.com', // Update this after deploying backend
+        : 'https://mitra-bot.onrender.com',
 
     // API Endpoints
     ENDPOINTS: {
