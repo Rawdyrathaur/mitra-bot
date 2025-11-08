@@ -96,6 +96,8 @@ secrets/
 *.pfx
 credentials.json
 service-account*.json
+client_secret*.json
+frontend/js/oauth-config.js
 
 # Don't ignore logo and assets
 !assets/
