@@ -6,22 +6,24 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    buildCommand: pip install --upgrade pip && pip install -r requirements-production.txt
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 --log-level info
     healthCheckPath: /api/health
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: GROQ_API_KEY
-        sync: false
+        sync: false  # Add manually in Render dashboard
       - key: GROQ_MODEL
         value: llama-3.3-70b-versatile
       - key: AI_TEMPERATURE
         value: 0.7
       - key: JWT_SECRET_KEY
-        generateValue: true
+        generateValue: true  # Render will auto-generate secure key
       - key: DATABASE_URL
         value: sqlite:///mitra_bot.db
       - key: FLASK_ENV
         value: production
+      - key: PORT
+        value: 10000
     autoDeploy: true

@@ -66,9 +66,9 @@ COPY --from=builder /root/.local /home/sambot/.local
 
 # Copy application code with proper ownership
 COPY --chown=sambot:sambot src/ ./src/
-COPY --chown=sambot:sambot templates/ ./templates/
 COPY --chown=sambot:sambot wsgi.py ./
 COPY --chown=sambot:sambot gunicorn_config.py ./
+COPY --chown=sambot:sambot .env ./.env
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /app/logs /app/uploads /app/temp \
