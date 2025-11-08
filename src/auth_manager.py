@@ -16,8 +16,8 @@ import os
 logger = logging.getLogger(__name__)
 
 # JWT Configuration
-JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
-JWT_ALGORITHM = 'HS256'
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
 
@@ -35,7 +35,8 @@ class AuthManager:
                 cursor = conn.cursor()
 
                 # Create users table
-                cursor.execute('''
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         email TEXT UNIQUE NOT NULL,
@@ -46,10 +47,12 @@ class AuthManager:
                         is_active BOOLEAN DEFAULT 1,
                         avatar_url TEXT
                     )
-                ''')
+                """
+                )
 
                 # Create sessions table for tracking active sessions
-                cursor.execute('''
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS user_sessions (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
@@ -60,7 +63,8 @@ class AuthManager:
                         ip_address TEXT,
                         FOREIGN KEY (user_id) REFERENCES users(id)
                     )
-                ''')
+                """
+                )
 
                 conn.commit()
                 logger.info("Auth database initialized successfully")
@@ -74,13 +78,13 @@ class AuthManager:
         try:
             # Validate input
             if not email or not username or not password:
-                return {'success': False, 'error': 'All fields are required'}
+                return {"success": False, "error": "All fields are required"}
 
             if len(password) < 8:
-                return {'success': False, 'error': 'Password must be at least 8 characters'}
+                return {"success": False, "error": "Password must be at least 8 characters"}
 
             # Hash password
-            password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -88,12 +92,12 @@ class AuthManager:
                 # Check if email already exists
                 cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
                 if cursor.fetchone():
-                    return {'success': False, 'error': 'Email already registered'}
+                    return {"success": False, "error": "Email already registered"}
 
                 # Insert new user
                 cursor.execute(
                     "INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)",
-                    (email, username, password_hash)
+                    (email, username, password_hash),
                 )
                 user_id = cursor.lastrowid
                 conn.commit()
@@ -103,18 +107,14 @@ class AuthManager:
 
                 logger.info(f"User registered successfully: {email}")
                 return {
-                    'success': True,
-                    'access_token': token,
-                    'user': {
-                        'id': user_id,
-                        'email': email,
-                        'name': username
-                    }
+                    "success": True,
+                    "access_token": token,
+                    "user": {"id": user_id, "email": email, "name": username},
                 }
 
         except Exception as e:
             logger.error(f"Error registering user: {e}")
-            return {'success': False, 'error': 'Registration failed'}
+            return {"success": False, "error": "Registration failed"}
 
     def login_user(self, email: str, password: str) -> Dict:
         """Authenticate user and return JWT token"""
@@ -124,29 +124,25 @@ class AuthManager:
 
                 # Get user from database
                 cursor.execute(
-                    "SELECT id, email, username, password_hash, is_active FROM users WHERE email = ?",
-                    (email,)
+                    "SELECT id, email, username, password_hash, is_active FROM users WHERE email = ?", (email,)
                 )
                 user = cursor.fetchone()
 
                 if not user:
-                    return {'success': False, 'error': 'Invalid email or password'}
+                    return {"success": False, "error": "Invalid email or password"}
 
                 user_id, email, username, password_hash, is_active = user
 
                 # Check if user is active
                 if not is_active:
-                    return {'success': False, 'error': 'Account is disabled'}
+                    return {"success": False, "error": "Account is disabled"}
 
                 # Verify password
-                if not bcrypt.checkpw(password.encode('utf-8'), password_hash):
-                    return {'success': False, 'error': 'Invalid email or password'}
+                if not bcrypt.checkpw(password.encode("utf-8"), password_hash):
+                    return {"success": False, "error": "Invalid email or password"}
 
                 # Update last login
-                cursor.execute(
-                    "UPDATE users SET last_login = ? WHERE id = ?",
-                    (datetime.now(), user_id)
-                )
+                cursor.execute("UPDATE users SET last_login = ? WHERE id = ?", (datetime.now(), user_id))
                 conn.commit()
 
                 # Generate JWT token
@@ -154,28 +150,24 @@ class AuthManager:
 
                 logger.info(f"User logged in successfully: {email}")
                 return {
-                    'success': True,
-                    'access_token': token,
-                    'user': {
-                        'id': user_id,
-                        'email': email,
-                        'name': username
-                    }
+                    "success": True,
+                    "access_token": token,
+                    "user": {"id": user_id, "email": email, "name": username},
                 }
 
         except Exception as e:
             logger.error(f"Error logging in user: {e}")
-            return {'success': False, 'error': 'Login failed'}
+            return {"success": False, "error": "Login failed"}
 
     def generate_token(self, user_id: int, email: str, username: str) -> str:
         """Generate JWT token for user"""
         payload = {
-            'user_id': user_id,
-            'sub': user_id,  # Standard JWT claim
-            'email': email,
-            'name': username,
-            'exp': datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
-            'iat': datetime.utcnow()
+            "user_id": user_id,
+            "sub": user_id,  # Standard JWT claim
+            "email": email,
+            "name": username,
+            "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
+            "iat": datetime.utcnow(),
         }
 
         token = jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
@@ -199,19 +191,18 @@ class AuthManager:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    "SELECT id, email, username, created_at, last_login, avatar_url FROM users WHERE id = ?",
-                    (user_id,)
+                    "SELECT id, email, username, created_at, last_login, avatar_url FROM users WHERE id = ?", (user_id,)
                 )
                 user = cursor.fetchone()
 
                 if user:
                     return {
-                        'id': user[0],
-                        'email': user[1],
-                        'name': user[2],
-                        'created_at': user[3],
-                        'last_login': user[4],
-                        'avatar_url': user[5]
+                        "id": user[0],
+                        "email": user[1],
+                        "name": user[2],
+                        "created_at": user[3],
+                        "last_login": user[4],
+                        "avatar_url": user[5],
                     }
 
                 return None
@@ -226,7 +217,7 @@ class AuthManager:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
 
-                allowed_fields = ['username', 'avatar_url']
+                allowed_fields = ["username", "avatar_url"]
                 update_fields = []
                 values = []
 
@@ -260,52 +251,50 @@ class AuthManager:
                 result = cursor.fetchone()
 
                 if not result:
-                    return {'success': False, 'error': 'User not found'}
+                    return {"success": False, "error": "User not found"}
 
                 password_hash = result[0]
 
                 # Verify current password
-                if not bcrypt.checkpw(current_password.encode('utf-8'), password_hash):
-                    return {'success': False, 'error': 'Current password is incorrect'}
+                if not bcrypt.checkpw(current_password.encode("utf-8"), password_hash):
+                    return {"success": False, "error": "Current password is incorrect"}
 
                 # Validate new password
                 if len(new_password) < 8:
-                    return {'success': False, 'error': 'New password must be at least 8 characters'}
+                    return {"success": False, "error": "New password must be at least 8 characters"}
 
                 # Hash and update new password
-                new_password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-                cursor.execute(
-                    "UPDATE users SET password_hash = ? WHERE id = ?",
-                    (new_password_hash, user_id)
-                )
+                new_password_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt())
+                cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_password_hash, user_id))
                 conn.commit()
 
-                return {'success': True}
+                return {"success": True}
 
         except Exception as e:
             logger.error(f"Error changing password: {e}")
-            return {'success': False, 'error': 'Failed to change password'}
+            return {"success": False, "error": "Failed to change password"}
 
 
 def require_auth(f):
     """Decorator to require authentication for routes"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
+        auth_header = request.headers.get("Authorization")
 
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'Authentication required'}), 401
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return jsonify({"error": "Authentication required"}), 401
 
-        token = auth_header.split('Bearer ')[1]
+        token = auth_header.split("Bearer ")[1]
         auth_manager = AuthManager()
         payload = auth_manager.verify_token(token)
 
         if not payload:
-            return jsonify({'error': 'Invalid or expired token'}), 401
+            return jsonify({"error": "Invalid or expired token"}), 401
 
         # Add user info to request context
-        request.user_id = payload['user_id']
-        request.user_email = payload['email']
+        request.user_id = payload["user_id"]
+        request.user_email = payload["email"]
 
         return f(*args, **kwargs)
 
@@ -314,18 +303,19 @@ def require_auth(f):
 
 def optional_auth(f):
     """Decorator to optionally check authentication"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
+        auth_header = request.headers.get("Authorization")
 
-        if auth_header and auth_header.startswith('Bearer '):
-            token = auth_header.split('Bearer ')[1]
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split("Bearer ")[1]
             auth_manager = AuthManager()
             payload = auth_manager.verify_token(token)
 
             if payload:
-                request.user_id = payload['user_id']
-                request.user_email = payload['email']
+                request.user_id = payload["user_id"]
+                request.user_email = payload["email"]
             else:
                 request.user_id = None
                 request.user_email = None
