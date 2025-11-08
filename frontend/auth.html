@@ -34,11 +34,17 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        html {
+            height: -webkit-fill-available;
         }
 
         /* Background Animation */
@@ -88,43 +94,43 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 16px;
+            padding: 28px 32px;
             box-shadow: var(--shadow);
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .logo-large {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, var(--primary-color), #9333ea);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 14px;
             font-size: 24px;
             color: white;
-            padding: 8px;
+            padding: 6px;
             box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
         }
 
         .auth-header h1 {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .auth-header p {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* Theme Toggle */
@@ -152,22 +158,22 @@
         /* Tabs */
         .auth-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
+            gap: 6px;
+            margin-bottom: 20px;
             background: var(--bg-tertiary);
             padding: 4px;
-            border-radius: 12px;
+            border-radius: 10px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 7px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -188,25 +194,25 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 6px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-primary);
         }
 
         .form-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--bg-tertiary);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 13px;
             font-family: inherit;
             transition: all 0.2s;
         }
@@ -250,13 +256,13 @@
 
         .forgot-password {
             text-align: right;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .forgot-password a {
             color: var(--primary-color);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 12px;
             transition: opacity 0.2s;
         }
 
@@ -267,12 +273,12 @@
         /* Buttons */
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 11px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--primary-color);
             color: white;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -312,9 +318,9 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 24px 0;
+            margin: 18px 0;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .divider::before,
@@ -326,31 +332,31 @@
         }
 
         .divider span {
-            padding: 0 12px;
+            padding: 0 10px;
         }
 
         /* OAuth Buttons */
         .oauth-buttons {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn-oauth {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--bg-tertiary);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-oauth:hover {
@@ -376,10 +382,95 @@
             to { transform: translateX(-50%) rotate(360deg); }
         }
 
-        /* Responsive */
+        /* Mobile & Tablet Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .auth-container {
+                padding: 24px 20px;
+                max-width: 100%;
+                margin: 0 auto;
+                border-radius: 12px;
+            }
+
+            .logo-large {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 12px;
+            }
+
+            .auth-header h1 {
+                font-size: 20px;
+            }
+
+            .auth-header p {
+                font-size: 12px;
+            }
+
+            .form-input {
+                padding: 11px 14px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .btn-primary {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .btn-oauth {
+                padding: 11px;
+                font-size: 14px;
+            }
+
+            .theme-toggle {
+                width: 36px;
+                height: 36px;
+                top: 16px;
+                right: 16px;
+            }
+        }
+
         @media (max-width: 480px) {
             .auth-container {
-                padding: 30px 20px;
+                padding: 20px 16px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            .divider {
+                margin: 14px 0;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .auth-container {
+                margin: 10px auto;
+            }
+
+            .logo-large {
+                width: 45px;
+                height: 45px;
+                margin-bottom: 8px;
+            }
+
+            .auth-header {
+                margin-bottom: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
             }
         }
 
@@ -688,72 +779,32 @@
         // Google Sign-In Configuration
         const GOOGLE_CLIENT_ID = window.OAUTH_CONFIG ? window.OAUTH_CONFIG.GOOGLE_CLIENT_ID : '';
 
-        // Google Sign-In with Popup (More compatible than One Tap)
+        // Google Sign-In with redirect flow (better for CORS issues)
         function signInWithGoogle() {
             if (!GOOGLE_CLIENT_ID) {
                 showToast('Google Sign-In is not configured. Contact administrator.', 'error');
                 return;
             }
 
-            // Use OAuth 2.0 popup flow - more reliable than One Tap
+            // Use OAuth 2.0 redirect flow
             const redirectUri = window.location.origin + window.location.pathname;
             const scope = 'email profile';
             const responseType = 'token id_token';
             const nonce = Math.random().toString(36).substring(2, 15);
+
+            // Save state for verification
+            sessionStorage.setItem('google_auth_state', nonce);
 
             const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
                 `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}` +
                 `&redirect_uri=${encodeURIComponent(redirectUri)}` +
                 `&response_type=${encodeURIComponent(responseType)}` +
                 `&scope=${encodeURIComponent(scope)}` +
-                `&nonce=${encodeURIComponent(nonce)}`;
+                `&nonce=${encodeURIComponent(nonce)}` +
+                `&prompt=select_account`;
 
-            // Open popup window
-            const width = 500;
-            const height = 600;
-            const left = (window.screen.width - width) / 2;
-            const top = (window.screen.height - height) / 2;
-
-            const popup = window.open(
-                authUrl,
-                'Google Sign-In',
-                `width=${width},height=${height},top=${top},left=${left}`
-            );
-
-            if (!popup) {
-                showToast('Please allow popups for Google Sign-In', 'error');
-                return;
-            }
-
-            // Listen for OAuth callback
-            window.addEventListener('message', handleGoogleCallback);
-
-            // Poll for popup close
-            const popupTimer = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(popupTimer);
-                    window.removeEventListener('message', handleGoogleCallback);
-                }
-            }, 500);
-        }
-
-        // Handle OAuth callback
-        async function handleGoogleCallback(event) {
-            // Only accept messages from Google
-            if (!event.origin.includes('accounts.google.com')) {
-                return;
-            }
-
-            try {
-                const params = new URLSearchParams(event.data);
-                const idToken = params.get('id_token');
-
-                if (idToken) {
-                    await processGoogleToken(idToken);
-                }
-            } catch (error) {
-                console.error('Google callback error:', error);
-            }
+            // Redirect to Google
+            window.location.href = authUrl;
         }
 
         // Process Google ID Token
@@ -798,22 +849,18 @@
             }
         }
 
-        // Check URL hash for OAuth redirect
+        // Check URL hash for OAuth redirect (runs on page load)
         if (window.location.hash) {
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             const idToken = hashParams.get('id_token');
+            const accessToken = hashParams.get('access_token');
 
-            if (idToken) {
-                // Notify parent window (if popup)
-                if (window.opener) {
-                    window.opener.postMessage(window.location.hash.substring(1), window.location.origin);
-                    window.close();
-                } else {
-                    // Direct redirect - process token
-                    processGoogleToken(idToken);
-                    // Clean URL
+            if (idToken && accessToken) {
+                // Process Google Sign-In
+                processGoogleToken(idToken).then(() => {
+                    // Clean URL after processing
                     history.replaceState(null, '', window.location.pathname);
-                }
+                });
             }
         }
 
