@@ -8,6 +8,10 @@ class Auth {
     init() {
         this.loadUser();
         this.checkAuth();
+        // Update UI for guest mode if applicable
+        if (localStorage.getItem('auth_mode') === 'guest') {
+            this.updateUI();
+        }
     }
 
     // Load user from token
@@ -43,15 +47,19 @@ class Auth {
         const currentPath = window.location.pathname;
         const isAuthPage = currentPath.includes('auth.html');
         const isLoggedIn = !!window.api.getToken();
+        const isGuestMode = localStorage.getItem('auth_mode') === 'guest';
 
-        // Redirect to auth page if not logged in and not already on auth page
-        if (!isLoggedIn && !isAuthPage) {
+        // Allow access if logged in OR in guest mode
+        const hasAccess = isLoggedIn || isGuestMode;
+
+        // Redirect to auth page if no access and not already on auth page
+        if (!hasAccess && !isAuthPage) {
             window.location.href = '/auth.html';
             return false;
         }
 
-        // Redirect to home if logged in and on auth page
-        if (isLoggedIn && isAuthPage) {
+        // Redirect to home if has access and on auth page
+        if (hasAccess && isAuthPage) {
             window.location.href = '/';
             return false;
         }
@@ -61,24 +69,34 @@ class Auth {
 
     // Update UI with user info
     updateUI() {
-        if (!this.user) return;
+        const isGuestMode = localStorage.getItem('auth_mode') === 'guest';
 
         // Update user profile in sidebar
         const userName = document.querySelector('.user-name');
         const userEmail = document.querySelector('.user-status');
 
-        if (userName) {
-            userName.textContent = this.user.name || 'User';
-        }
+        if (isGuestMode) {
+            // Guest mode UI
+            if (userName) {
+                userName.textContent = 'Guest User';
+            }
+            if (userEmail) {
+                userEmail.textContent = 'Browsing as Guest';
+            }
+        } else if (this.user) {
+            // Logged in user UI
+            if (userName) {
+                userName.textContent = this.user.name || 'User';
+            }
+            if (userEmail) {
+                userEmail.textContent = this.user.email || 'Online';
+            }
 
-        if (userEmail) {
-            userEmail.textContent = this.user.email || 'Online';
-        }
-
-        // Add user avatar if available
-        const userAvatar = document.querySelector('.user-avatar');
-        if (userAvatar && this.user.avatar) {
-            userAvatar.innerHTML = `<img src="${this.user.avatar}" alt="${this.user.name}">`;
+            // Add user avatar if available
+            const userAvatar = document.querySelector('.user-avatar');
+            if (userAvatar && this.user.avatar) {
+                userAvatar.innerHTML = `<img src="${this.user.avatar}" alt="${this.user.name}">`;
+            }
         }
     }
 
@@ -161,6 +179,8 @@ function showUserMenu() {
         return;
     }
 
+    const isGuestMode = localStorage.getItem('auth_mode') === 'guest';
+
     const menu = document.createElement('div');
     menu.className = 'user-menu';
     menu.style.cssText = `
@@ -176,18 +196,28 @@ function showUserMenu() {
         min-width: 200px;
     `;
 
-    menu.innerHTML = `
-        <button onclick="showProfile()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-user"></i> Profile
-        </button>
-        <button onclick="showSettings()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-cog"></i> Settings
-        </button>
-        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
-        <button onclick="window.auth.logout()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--error-color); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-    `;
+    if (isGuestMode) {
+        // Guest mode menu
+        menu.innerHTML = `
+            <button onclick="goToSignIn()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--primary-color); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-sign-in-alt"></i> Sign In / Register
+            </button>
+        `;
+    } else {
+        // Logged in user menu
+        menu.innerHTML = `
+            <button onclick="showProfile()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-user"></i> Profile
+            </button>
+            <button onclick="showSettings()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
+            <button onclick="window.auth.logout()" style="width: 100%; padding: 10px; text-align: left; background: none; border: none; color: var(--error-color); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        `;
+    }
 
     document.body.appendChild(menu);
 
@@ -200,6 +230,12 @@ function showUserMenu() {
             }
         });
     }, 0);
+}
+
+function goToSignIn() {
+    localStorage.removeItem('auth_mode');
+    localStorage.removeItem('guest_id');
+    window.location.href = '/auth.html';
 }
 
 function showProfile() {

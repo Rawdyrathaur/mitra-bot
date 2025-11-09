@@ -13,9 +13,6 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Google Sign-In -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <!-- Main App Styles -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/themes.css">
@@ -94,52 +91,52 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 28px 32px;
+            border-radius: 12px;
+            padding: 20px 24px;
             box-shadow: var(--shadow);
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .logo-large {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, var(--primary-color), #9333ea);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 14px;
-            font-size: 24px;
+            margin: 0 auto 10px;
+            font-size: 20px;
             color: white;
-            padding: 6px;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            padding: 4px;
+            box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
         }
 
         .auth-header h1 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .auth-header p {
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
         }
 
         /* Theme Toggle */
         .theme-toggle {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
@@ -148,6 +145,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 14px;
         }
 
         .theme-toggle:hover {
@@ -158,22 +156,22 @@
         /* Tabs */
         .auth-tabs {
             display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
+            gap: 4px;
+            margin-bottom: 14px;
             background: var(--bg-tertiary);
-            padding: 4px;
-            border-radius: 10px;
+            padding: 3px;
+            border-radius: 8px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 8px;
+            padding: 7px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
-            border-radius: 7px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -194,22 +192,22 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 5px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-primary);
         }
 
         .form-input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 7px;
             background: var(--bg-tertiary);
             color: var(--text-primary);
             font-size: 13px;
@@ -256,13 +254,13 @@
 
         .forgot-password {
             text-align: right;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .forgot-password a {
             color: var(--primary-color);
             text-decoration: none;
-            font-size: 12px;
+            font-size: 11px;
             transition: opacity 0.2s;
         }
 
@@ -273,12 +271,12 @@
         /* Buttons */
         .btn-primary {
             width: 100%;
-            padding: 11px;
+            padding: 9px;
             border: none;
-            border-radius: 8px;
+            border-radius: 7px;
             background: var(--primary-color);
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -318,9 +316,9 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 18px 0;
+            margin: 14px 0;
             color: var(--text-secondary);
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .divider::before,
@@ -332,31 +330,31 @@
         }
 
         .divider span {
-            padding: 0 10px;
+            padding: 0 8px;
         }
 
         /* OAuth Buttons */
         .oauth-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-oauth {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 7px;
             background: var(--bg-tertiary);
             color: var(--text-primary);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         .btn-oauth:hover {
@@ -365,13 +363,45 @@
         }
 
         .btn-oauth i {
-            font-size: 18px;
+            font-size: 16px;
+        }
+
+        /* Guest Button */
+        .btn-guest {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 7px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .btn-guest:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-guest:active {
+            transform: translateY(0);
+        }
+
+        .btn-guest i {
+            font-size: 16px;
         }
 
         /* Loading Spinner */
         .spinner {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid rgba(255,255,255,0.3);
             border-top-color: white;
             border-radius: 50%;
@@ -391,60 +421,61 @@
             }
 
             .auth-container {
-                padding: 24px 20px;
+                padding: 18px 16px;
                 max-width: 100%;
                 margin: 0 auto;
-                border-radius: 12px;
+                border-radius: 10px;
             }
 
             .logo-large {
-                width: 50px;
-                height: 50px;
-                margin-bottom: 12px;
+                width: 44px;
+                height: 44px;
+                margin-bottom: 10px;
             }
 
             .auth-header h1 {
-                font-size: 20px;
+                font-size: 17px;
             }
 
             .auth-header p {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .form-input {
-                padding: 11px 14px;
+                padding: 9px 12px;
                 font-size: 16px; /* Prevents zoom on iOS */
             }
 
             .btn-primary {
-                padding: 12px;
-                font-size: 15px;
-            }
-
-            .btn-oauth {
-                padding: 11px;
+                padding: 10px;
                 font-size: 14px;
             }
 
+            .btn-oauth {
+                padding: 9px;
+                font-size: 13px;
+            }
+
             .theme-toggle {
-                width: 36px;
-                height: 36px;
-                top: 16px;
-                right: 16px;
+                width: 30px;
+                height: 30px;
+                top: 14px;
+                right: 14px;
+                font-size: 13px;
             }
         }
 
         @media (max-width: 480px) {
             .auth-container {
-                padding: 20px 16px;
+                padding: 16px 14px;
             }
 
             .form-group {
-                margin-bottom: 14px;
+                margin-bottom: 11px;
             }
 
             .divider {
-                margin: 14px 0;
+                margin: 12px 0;
             }
         }
 
@@ -460,17 +491,17 @@
             }
 
             .logo-large {
-                width: 45px;
-                height: 45px;
-                margin-bottom: 8px;
+                width: 40px;
+                height: 40px;
+                margin-bottom: 7px;
             }
 
             .auth-header {
-                margin-bottom: 16px;
+                margin-bottom: 12px;
             }
 
             .form-group {
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
         }
 
@@ -561,15 +592,13 @@
             </button>
 
             <div class="divider">
-                <span>or continue with</span>
+                <span>or</span>
             </div>
 
-            <div class="oauth-buttons">
-                <button type="button" class="btn-oauth" onclick="signInWithGoogle()">
-                    <i class="fab fa-google"></i>
-                    <span>Continue with Google</span>
-                </button>
-            </div>
+            <button type="button" class="btn-guest" onclick="continueAsGuest()">
+                <i class="fas fa-user"></i>
+                <span>Continue as Guest</span>
+            </button>
         </form>
 
         <!-- Register Form -->
@@ -612,21 +641,10 @@
                 <span>Create Account</span>
                 <div class="spinner"></div>
             </button>
-
-            <div class="divider">
-                <span>or continue with</span>
-            </div>
-
-            <div class="oauth-buttons">
-                <button type="button" class="btn-oauth" onclick="signInWithGoogle()">
-                    <i class="fab fa-google"></i>
-                    <span>Continue with Google</span>
-                </button>
-            </div>
         </form>
     </div>
 
-    <script src="js/oauth-config.js"></script>
+</script>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script>
@@ -776,96 +794,22 @@
             }
         }
 
-        // Google Sign-In Configuration
-        const GOOGLE_CLIENT_ID = window.OAUTH_CONFIG ? window.OAUTH_CONFIG.GOOGLE_CLIENT_ID : '';
+        // Continue as Guest
+        function continueAsGuest() {
+            // Set guest mode in localStorage
+            localStorage.setItem('auth_mode', 'guest');
+            localStorage.setItem('guest_id', 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
 
-        // Google Sign-In with redirect flow (better for CORS issues)
-        function signInWithGoogle() {
-            if (!GOOGLE_CLIENT_ID) {
-                showToast('Google Sign-In is not configured. Contact administrator.', 'error');
-                return;
-            }
+            showToast('Continuing as guest...', 'success');
 
-            // Use OAuth 2.0 redirect flow
-            const redirectUri = window.location.origin + window.location.pathname;
-            const scope = 'email profile';
-            const responseType = 'token id_token';
-            const nonce = Math.random().toString(36).substring(2, 15);
-
-            // Save state for verification
-            sessionStorage.setItem('google_auth_state', nonce);
-
-            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-                `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}` +
-                `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-                `&response_type=${encodeURIComponent(responseType)}` +
-                `&scope=${encodeURIComponent(scope)}` +
-                `&nonce=${encodeURIComponent(nonce)}` +
-                `&prompt=select_account`;
-
-            // Redirect to Google
-            window.location.href = authUrl;
+            // Redirect to main app
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 500);
         }
 
-        // Process Google ID Token
-        async function processGoogleToken(idToken) {
-            try {
-                // Decode JWT to get user info
-                const payload = JSON.parse(atob(idToken.split('.')[1]));
-
-                const email = payload.email;
-                const name = payload.name;
-                const googleId = payload.sub;
-
-                showToast('Signing in with Google...', 'success');
-
-                // Create unique password from Google ID
-                const password = 'google_' + googleId;
-
-                // Try to register (new user) or login (existing user)
-                try {
-                    const registerResponse = await window.api.register(email, name, password);
-                    if (registerResponse.access_token) {
-                        showToast('Account created! Redirecting...', 'success');
-                        setTimeout(() => window.location.href = '/', 1000);
-                        return;
-                    }
-                } catch (registerError) {
-                    // User exists, try login
-                    if (registerError.message && registerError.message.includes('already registered')) {
-                        const loginResponse = await window.api.login(email, password);
-                        if (loginResponse.access_token) {
-                            showToast('Welcome back! Redirecting...', 'success');
-                            setTimeout(() => window.location.href = '/', 1000);
-                            return;
-                        }
-                    }
-                }
-
-                throw new Error('Google Sign-In failed');
-            } catch (error) {
-                console.error('Google token error:', error);
-                showToast(error.message || 'Google Sign-In failed', 'error');
-            }
-        }
-
-        // Check URL hash for OAuth redirect (runs on page load)
-        if (window.location.hash) {
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
-            const idToken = hashParams.get('id_token');
-            const accessToken = hashParams.get('access_token');
-
-            if (idToken && accessToken) {
-                // Process Google Sign-In
-                processGoogleToken(idToken).then(() => {
-                    // Clean URL after processing
-                    history.replaceState(null, '', window.location.pathname);
-                });
-            }
-        }
-
-        // Check if already logged in
-        if (window.api && window.api.getToken()) {
+        // Check if already logged in or in guest mode
+        if ((window.api && window.api.getToken()) || localStorage.getItem('auth_mode') === 'guest') {
             window.location.href = '/';
         }
     </script>

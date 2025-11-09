@@ -27,6 +27,10 @@ class UI {
         // New chat button
         document.getElementById('newChatBtn')?.addEventListener('click', () => {
             window.chat.startNewConversation();
+            // Close sidebar on mobile after starting new chat
+            if (window.innerWidth <= 768) {
+                this.closeSidebar();
+            }
         });
 
         // Search
@@ -154,10 +158,56 @@ class UI {
     toggleSidebar() {
         this.sidebarOpen = !this.sidebarOpen;
         const sidebar = document.getElementById('sidebar');
+
         if (this.sidebarOpen) {
             sidebar.classList.add('active');
+            // Add backdrop for mobile
+            if (window.innerWidth <= 768) {
+                this.addSidebarBackdrop();
+            }
         } else {
             sidebar.classList.remove('active');
+            this.removeSidebarBackdrop();
+        }
+    }
+
+    closeSidebar() {
+        this.sidebarOpen = false;
+        const sidebar = document.getElementById('sidebar');
+        sidebar?.classList.remove('active');
+        this.removeSidebarBackdrop();
+    }
+
+    addSidebarBackdrop() {
+        // Check if backdrop already exists
+        if (document.querySelector('.sidebar-backdrop')) return;
+
+        const backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        backdrop.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            animation: fadeIn 0.2s ease;
+        `;
+
+        // Close sidebar when clicking backdrop
+        backdrop.addEventListener('click', () => {
+            this.closeSidebar();
+        });
+
+        document.body.appendChild(backdrop);
+    }
+
+    removeSidebarBackdrop() {
+        const backdrop = document.querySelector('.sidebar-backdrop');
+        if (backdrop) {
+            backdrop.style.animation = 'fadeOut 0.2s ease';
+            setTimeout(() => backdrop.remove(), 200);
         }
     }
 
@@ -350,6 +400,10 @@ class UI {
             item.addEventListener('click', (e) => {
                 if (!e.target.closest('.conversation-actions')) {
                     window.chat.loadConversation(item.dataset.id);
+                    // Close sidebar on mobile after selecting conversation
+                    if (window.innerWidth <= 768) {
+                        this.closeSidebar();
+                    }
                 }
             });
 

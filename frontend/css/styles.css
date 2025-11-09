@@ -551,3 +551,22 @@ input, textarea, select {
     border-radius: var(--radius-sm);
     margin-bottom: var(--space-sm);
 }
+
+/* Fade Animations for Backdrop */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
