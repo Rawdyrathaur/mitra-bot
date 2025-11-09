@@ -43,7 +43,13 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_FILE_SIZE', 16 * 1024 * 1024))  # 16MB
 
 # Initialize extensions
-CORS(app, origins=os.getenv('ALLOWED_ORIGINS', '*').split(','))
+# CORS configuration - allow requests from Vercel frontend
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
+if allowed_origins == '*':
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+else:
+    CORS(app, resources={r"/api/*": {"origins": allowed_origins.split(',')}}, supports_credentials=True)
+
 jwt = JWTManager(app)
 limiter = Limiter(
     app,

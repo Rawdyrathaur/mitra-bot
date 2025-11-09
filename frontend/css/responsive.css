@@ -95,9 +95,14 @@ body {
         backdrop-filter: blur(10px);
     }
 
+    .chat-title-section {
+        flex: 1;
+        min-width: 0;
+    }
+
     .chat-title {
         font-size: var(--text-xl);
-        max-width: 200px;
+        max-width: none;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -214,7 +219,8 @@ body {
 
     .chat-title {
         font-size: var(--text-lg);
-        max-width: 160px;
+        max-width: none;
+        flex: 1;
     }
 
     .chat-subtitle {
